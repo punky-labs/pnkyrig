@@ -29,9 +29,9 @@ class Limb():
     def build_limb(self):
         self.master_ctl = self.create_master_ctl()
         
-        self.fk_chain = self.build_chain(suffix='FK', color=self.fk_color)
-        self.ik_chain = self.build_chain(suffix='IK', color=self.ik_color)
-        self.bind_chain = self.build_chain(suffix='bind', color=self.bind_color)
+        self.fk_chain = self.build_chain(suffix='FK', orient=True, color=self.fk_color)
+        self.ik_chain = self.build_chain(suffix='IK', orient=True, color=self.ik_color)
+        self.bind_chain = self.build_chain(suffix='bind', orient=True, color=self.bind_color)
         self.build_FK()
         self.build_IK()
         self.heirachy()
@@ -45,19 +45,20 @@ class Limb():
         chain = []
         
         root_name = self.side+self.names['root']+"_"+suffix+"_JNT"
-        root_p = cmds.xform(self.locators['root'], q=1, t=1)
+        positions = {loc: cmds.xform(self.locators[loc], q=1, t=1) for loc in ['root', 'mid', 'end']}
+        root_p = positions['root']
         mid_name = self.side+self.names['mid']+"_"+suffix+"_JNT"
-        mid_p = cmds.xform(self.locators['mid'], q=1, t=1)
+        mid_p = positions['mid']
         end_name = self.side+self.names['end']+"_"+suffix+"_JNT"
-        end_p = cmds.xform(self.locators['end'], q=1, t=1)
-
+        end_p = positions['end']
+        cmds.select(d=True)  # Deselect all to ensure joints are created independently
         cmds.select( d=True )
         chain.append(cmds.joint( p=root_p, n=root_name ))
         chain.append(cmds.joint( p=mid_p, n=mid_name ))
         chain.append(cmds.joint( p=end_p, n=end_name ))
 
-        for jnt in chain:
-            rigshapes.setRGBColor(jnt, color=color)
+        joints_to_color = [(jnt, color) for jnt in chain]
+        rigshapes.setRGBColor(joints_to_color)
 
         if orient:
             cmds.joint( root_name, e=True, zso=True, oj='xyz' , sao='yup')

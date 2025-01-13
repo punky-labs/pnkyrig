@@ -28,7 +28,9 @@ def getMayaWindow():
     return wrapInstance(int(mw_ptr), QtWidgets.QMainWindow)
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, parent=getMayaWindow()):
+    def __init__(self, parent=None):
+        if parent is None:
+            parent = getMayaWindow()
         super(MainWindow, self).__init__(parent)
         
         self.limb = { "root":None,
@@ -44,9 +46,7 @@ class MainWindow(QtWidgets.QMainWindow):
                       "pv" : "pv"}
         
         self.side = 'L'
-        self.orient = 'hor'
-        
-        uiFilePath = str(Path(__file__).parent.absolute()) + '/ui/fkikui.ui'
+        uiFilePath = Path(__file__).parent / 'ui' / 'fkikui.ui'
 
         loader = QUiLoader()
         uifile = QtCore.QFile(uiFilePath)
@@ -129,6 +129,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def populate_selected(self, destination):
         selected = cmds.ls(sl=True) or []
+        if not selected:
+            print("No object selected")
+            return
         if(destination==1):
             self.ui.sel_root.setText(selected[0])
             self.limb["root"] = selected[0]

@@ -1,6 +1,6 @@
 import maya.cmds as cmds
 
-def makeCross(name, size=1, plane = 'z'):
+def makeCross(name, size=1, plane='z'):
     points = [(-1.0, 3.0, 0.0), (1.0, 3.0, 0.0), (1.0, 1.0, 0.0), 
               (3.0, 1.0, 0.0), (3.0, -1.0, 0.0), (1.0, -1.0, 0.0), 
               (1.0, -3.0, 0.0), (-1.0, -3.0, 0.0), (-1.0, -1.0, 0.0), 
@@ -28,18 +28,18 @@ def makeCross3D(name, size=1):
 
 # Groups multiple shape nodes under a single node 
 def parentShapes(selected=None, name=None):
-    if selected == None:
+    if selected is None:
         selected = cmds.ls(sl=True)
 
-    shapes = cmds.listRelatives(selected, s=True)
-    if shapes is not None:
+    shapeNodes = cmds.listRelatives(selected, s=True)
+    if shapeNodes is not None:
         new_group = cmds.group(empty=True, n=name)
-        for shape in shapes:
-            cmds.parent(shape, new_group, relative=True,  shape=True)
-        for object in selected:
-            cmds.delete(object)
+        for shapeNode in shapeNodes:
+            cmds.parent(shapeNode, new_group, relative=True,  shape=True)
+        for shapeObject in selected:
+            cmds.delete(shapeObject)
     else:
-        cmds.error('Please select only shapes')
+        cmds.error('Please select only shape nodes')
 
 def setRGBColor(ctrl, color = (1,1,1)):
     
